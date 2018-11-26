@@ -19,9 +19,13 @@ class JobboleSpider(scrapy.Spider):
         """
 
         # 解析列表页中的所有文章url并交给scrapy进行下载
-        post_urls = response.css("#archive .floated-thumb .post-meta a::attr(href)").extract()
-        for post_url in post_urls:
-            yield Request(url=parse.urljoin(response.url, post_url), callback=self.parse_detail)
+        post_nodes = response.css("#archive .floated-thumb .post-meta a")
+        for post_node in post_nodes:
+            image_url = post_node.css("img::attr(src)").extract_first("")
+            post_url = post_node.css("::attr(href)").extract_first("")
+            yield Request(url=parse.urljoin(response.url, post_url),
+                          meta={"front_image_url": parse.urljoin(response.url, image_url)},
+                          callback=self.parse_detail)
 
         # 提取下一页的url并交给scrapy进行下载
         next_url = response.css(".next.page-numbers::attr(href)").extract_first("")
@@ -30,8 +34,10 @@ class JobboleSpider(scrapy.Spider):
         pass
 
     def parse_detail(self, response):
+        front_image_url = response.meta.get("front_image_url", "")
         title = response.css(".entry-header h1::text").extract_first("")
-        create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("").strip().replace(".", "").strip()
+        create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("").strip().replace(".",
+                                                                                                          "").strip()
         praise_nums = response.css(".vote-post-up h10::text").extract_first("")
         fav_nums = response.css("span.bookmark-btn::text").extract_first("")
         match_re = re.match(".*?(\d+).*", fav_nums)
