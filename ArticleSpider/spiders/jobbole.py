@@ -36,7 +36,7 @@ class JobboleSpider(scrapy.Spider):
     def parse_detail(self, response):
         front_image_url = response.meta.get("front_image_url", "")
         title = response.css(".entry-header h1::text").extract_first("")
-        create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("").strip().replace(".",
+        create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("").strip().replace("·",
                                                                                                           "").strip()
         praise_nums = response.css(".vote-post-up h10::text").extract_first("")
         fav_nums = response.css("span.bookmark-btn::text").extract_first("")
