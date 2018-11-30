@@ -7,7 +7,7 @@ from ArticleSpider.items import JobBoleArticleItem
 from ArticleSpider.utils import common
 
 
-class JobboleSpider(scrapy.Spider):
+class JobBoleSpider(scrapy.Spider):
     name = 'jobbole'
     allowed_domains = ['blog.jobbole.com']
     start_urls = ['http://blog.jobbole.com/all-posts/']
@@ -38,8 +38,8 @@ class JobboleSpider(scrapy.Spider):
         article_item = JobBoleArticleItem()
         front_image_url = response.meta.get("front_image_url", "")
         title = response.css(".entry-header h1::text").extract_first("")
-        create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("").strip().replace("·",
-                                                                                                          "").strip()
+        create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("") \
+            .replace("/", "-").strip().replace("·", "").strip()
         praise_nums = response.css(".vote-post-up h10::text").extract_first("")
         fav_nums = response.css("span.bookmark-btn::text").extract_first("")
         match_re = re.match(".*?(\d+).*", fav_nums)
