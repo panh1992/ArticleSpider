@@ -4,6 +4,7 @@ import hashlib
 import re
 import datetime
 
+
 def get_md5(value):
     """
     计算md5
