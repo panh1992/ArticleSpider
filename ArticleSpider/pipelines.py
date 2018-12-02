@@ -67,12 +67,14 @@ class PostgresTwistedPipeline(object):
 
     def handle_error(self, failure, item, spider):
         # 插入异常处理
-        print(failure)
+        print(failure.value.pgerror)
 
 
 class ArticleImagesPipeline(ImagesPipeline):
 
     def item_completed(self, results, item, info):
-        for ok, value in results:
-            item['front_image_path'] = value['path']
+        if 'front_image_url' in item:
+            for ok, value in results:
+                if 'path' in value:
+                    item['front_image_path'] = value['path']
         return item
