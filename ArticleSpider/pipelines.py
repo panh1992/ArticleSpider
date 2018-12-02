@@ -57,10 +57,8 @@ class PostgresTwistedPipeline(object):
 
     def do_insert(self, cursor, item):
         # 执行数据插入
-        insert_sql = """
-                    INSERT INTO article(url_object_id, url, title, tags, front_image_url, front_image_path, comment_nums, 
-                    fav_nums, praise_nums, create_date, content) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """
+        insert_sql = """INSERT INTO article(url_object_id, url, title, tags, front_image_url, front_image_path, comment_nums, 
+                    fav_nums, praise_nums, create_date, content) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         cursor.execute(insert_sql, (item["url_object_id"], item["url"], item["title"], item["tags"],
                        item["front_image_url"], item["front_image_path"], item["comment_nums"], item["fav_nums"],
                        item["praise_nums"], item["create_date"], item["content"]))
