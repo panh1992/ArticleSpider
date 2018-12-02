@@ -6,6 +6,7 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+from scrapy.loader.processors import MapCompose
 
 
 class ArticleSpiderItem(scrapy.Item):
@@ -14,8 +15,11 @@ class ArticleSpiderItem(scrapy.Item):
     pass
 
 
+
 class JobBoleArticleItem(scrapy.Item):
-    title = scrapy.Field()
+    title = scrapy.Field(
+        input_processor = MapCompose()
+    )
     create_date = scrapy.Field()
     url = scrapy.Field()
     url_object_id = scrapy.Field()

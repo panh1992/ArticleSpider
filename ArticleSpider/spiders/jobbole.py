@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import re
+import datetime
 from scrapy.http import Request
+from scrapy.loader import ItemLoader
 from urllib import parse
 from ArticleSpider.items import JobBoleArticleItem
 from ArticleSpider.utils import common
@@ -39,7 +41,7 @@ class JobBoleSpider(scrapy.Spider):
         front_image_url = response.meta.get("front_image_url", "")
         title = response.css(".entry-header h1::text").extract_first("")
         create_date = response.css("p.entry-meta-hide-on-mobile::text").extract_first("") \
-            .replace("/", "-").strip().replace("·", "").strip()
+            .replace("·", "").strip()
         praise_nums = response.css(".vote-post-up h10::text").extract_first("")
         fav_nums = response.css("span.bookmark-btn::text").extract_first("")
         match_re = re.match(".*?(\d+).*", fav_nums)
@@ -57,8 +59,11 @@ class JobBoleSpider(scrapy.Spider):
         tag_list = response.css("p.entry-meta-hide-on-mobile a::text").extract()
         tag_list = [element for element in tag_list if not element.strip().endswith("评论")]
         tags = ",".join(tag_list)
-
         article_item["title"] = title
+        try:
+            create_date = datetime.datetime.strptime(create_date, '%Y/%m/%d').date()
+        except Exception as e:
+            create_date = datetime.datetime.now().date()
         article_item["create_date"] = create_date
         article_item["url"] = response.url
         article_item["url_object_id"] = common.get_md5(response.url)
@@ -68,4 +73,7 @@ class JobBoleSpider(scrapy.Spider):
         article_item["fav_nums"] = fav_nums
         article_item["tags"] = tags
         article_item["content"] = content
+        item_loader = ItemLoader(item=JobBoleArticleItem(), response=response)
+        item_loader.add_css()
+        item_loader.add_value()
         yield article_item
